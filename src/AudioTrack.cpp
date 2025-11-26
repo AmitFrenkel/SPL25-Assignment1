@@ -36,7 +36,7 @@ AudioTrack::~AudioTrack() {
     std::cout << "AudioTrack destructor called for: " << title << std::endl;
     #endif
     // Your code here...
-    delete waveform_data;
+    delete[] waveform_data;
 }
 
 AudioTrack::AudioTrack(const AudioTrack& other)
@@ -50,8 +50,11 @@ AudioTrack::AudioTrack(const AudioTrack& other)
     artists = other.artists;
     duration_seconds = other.duration_seconds;
     bpm = other.bpm;
-    waveform_data = new double(*other.waveform_data);
     waveform_size = other.waveform_size;
+    waveform_data = new double[waveform_size];
+    for (size_t i = 0; i < waveform_size; ++i) {
+        waveform_data[i] = other.waveform_data[i];
+    }
 }
 
 AudioTrack& AudioTrack::operator=(const AudioTrack& other) {
@@ -63,13 +66,14 @@ AudioTrack& AudioTrack::operator=(const AudioTrack& other) {
     if(this == &other){
         return *this;
     }
-    delete waveform_data;
     title = other.title;
     artists = other.artists;
     duration_seconds = other.duration_seconds;
     bpm = other.bpm;
-    waveform_data = other.waveform_data;
     waveform_size = other.waveform_size;
+    for (size_t i = 0; i < waveform_size; ++i) {
+        waveform_data[i] = other.waveform_data[i];
+    }
     return *this;
 }
 
@@ -86,7 +90,6 @@ AudioTrack::AudioTrack(AudioTrack&& other) noexcept {
     waveform_data = other.waveform_data;
     waveform_size = other.waveform_size;
     //empy other
-    other.title = nullptr;
     other.artists.clear();
     other.duration_seconds=0;
     other.bpm=0;
@@ -110,7 +113,6 @@ AudioTrack& AudioTrack::operator=(AudioTrack&& other) noexcept {
         waveform_data = other.waveform_data;
         waveform_size = other.waveform_size;
         //empy other
-        other.title = nullptr;
         other.artists.clear();
         other.duration_seconds=0;
         other.bpm=0;
