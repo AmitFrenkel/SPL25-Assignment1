@@ -6,7 +6,7 @@
 AudioTrack::AudioTrack(const std::string& title, const std::vector<std::string>& artists, 
                       int duration, int bpm, size_t waveform_samples)
     : title(title), artists(artists), duration_seconds(duration), bpm(bpm), 
-      waveform_size(waveform_samples) {
+      waveform_data(nullptr), waveform_size(waveform_samples) {
 
     // Allocate memory for waveform analysis
     waveform_data = new double[waveform_size];
@@ -90,6 +90,7 @@ AudioTrack::AudioTrack(AudioTrack&& other) noexcept {
     waveform_data = other.waveform_data;
     waveform_size = other.waveform_size;
     //empy other
+    other.title = "";
     other.artists.clear();
     other.duration_seconds=0;
     other.bpm=0;
@@ -113,6 +114,7 @@ AudioTrack& AudioTrack::operator=(AudioTrack&& other) noexcept {
         waveform_data = other.waveform_data;
         waveform_size = other.waveform_size;
         //empy other
+        other.title = "";
         other.artists.clear();
         other.duration_seconds=0;
         other.bpm=0;
