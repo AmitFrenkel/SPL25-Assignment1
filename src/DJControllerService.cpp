@@ -10,8 +10,27 @@ DJControllerService::DJControllerService(size_t cache_size)
  * TODO: Implement loadTrackToCache method
  */
 int DJControllerService::loadTrackToCache(AudioTrack& track) {
-    // Your implementation here 
-    return 0; // Placeholder
+    auto track_id=track.get_title();
+    if(cache.contains(track_id))
+    {
+        cache.get(track_id);
+        return 1;
+    } 
+    auto clone=track.clone().get();
+    if(!clone){
+        throw std::invalid_argument("This is a NullPointer");
+    }
+    clone->load();
+    clone->analyze_beatgrid();
+    bool putted=cache.put((clone->clone()));
+    int result=0;
+    if (putted)
+      result=-1;
+    return result;
+
+
+
+
 }
 
 void DJControllerService::set_cache_size(size_t new_size) {
@@ -28,6 +47,10 @@ void DJControllerService::displayCacheStatus() const {
  * TODO: Implement getTrackFromCache method
  */
 AudioTrack* DJControllerService::getTrackFromCache(const std::string& track_title) {
-    // Your implementation here
-    return nullptr; // Placeholder
+    auto ptr = cache.get(track_title);
+    if(ptr){
+        return ptr;
+    }
+    // error log - dor/yagel
+    return nullptr;
 }
