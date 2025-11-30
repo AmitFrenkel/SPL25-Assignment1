@@ -82,9 +82,9 @@ size_t LRUCache::findLRUSlot() const {
     if(size() == 0){
         return max_size;
     }
-    auto min_index=-1;
+    size_t min_index=-1;
     auto min_access=access_counter;
-    for(auto i=0; i<size(); i++){
+    for(size_t i=0; i<size(); i++){
         if(slots[i].isOccupied() && slots[i].getLastAccessTime() < min_access){
             min_index = i;
             min_access = slots[i].getLastAccessTime();

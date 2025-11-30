@@ -80,12 +80,12 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
     // Your implementation here
     std::cout<<"[INFO] Loading playlist: "<<playlist_name<<""<<std::endl;
     playlist = Playlist(playlist_name);
-    for(int i=0; i<track_indices.size(); i++){
-        if(track_indices[i]>=library.size()-1 || track_indices[i]<0){
+    for(size_t i=0; i<track_indices.size(); i++){
+        if(track_indices[i]>=(int)library.size()-1 || track_indices[i]<0){
             std::cout<<"[WARNING] Invalid track index: "<<i<<""<<std::endl;
             continue;
         }
-        auto clone = library[track_indices[i]]->clone().get();
+        auto clone = library[track_indices[i]]->clone().release();
         if(!clone){
             std::cout<<"[ERROR] track is null"<<i<<""<<std::endl;
             continue;
@@ -110,4 +110,5 @@ std::vector<std::string> DJLibraryService::getTrackTitles() const {
     for(auto track : tracks){
         result.push_back(track->get_title());
     }
+    return result;
 }

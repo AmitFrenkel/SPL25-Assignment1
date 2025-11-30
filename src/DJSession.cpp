@@ -113,6 +113,7 @@ bool DJSession::load_track_to_mixer_deck(const std::string& track_title) {
             stats.errors++;
             return false;
     }
+    return false;
 }
 
 /**
@@ -146,16 +147,16 @@ void DJSession::simulate_dj_performance() {
     // Your implementation here
     std::vector<std::string> play_name;
     if(play_all){
-        for (const auto& [key, value] : session_config.playlists) {
-        play_name.push_back(key);
+        for (const auto& pair : session_config.playlists) {
+        play_name.push_back(pair.first);
         }
         std::sort(play_name.begin(), play_name.end());
-        for(auto play : play_name){
+        for(const auto& play : play_name){
         if(!load_playlist(play)){
             std::cout<<"[ERROR] load failed"<<std::endl;
             continue;
         }
-        for(auto track_title : track_titles){
+        for(const auto& track_title : track_titles){
             std::cout<<"\n–- Processing: "<<track_title<<" –-"<<std::endl;
             stats.tracks_processed++;
             int result = load_track_to_controller(track_title);
@@ -172,7 +173,7 @@ void DJSession::simulate_dj_performance() {
                     break;   
             }
             if(!load_track_to_mixer_deck(track_title)){
-                std::cout<<"[ERROR] loading failed"<<std::endl;
+                std::cout<<"[ERROR] Track: "<<track_title<<" load failed"<<std::endl;
                 continue;
             }
         }
@@ -180,14 +181,14 @@ void DJSession::simulate_dj_performance() {
     }
     }
     else{
-        auto user_input = display_playlist_menu_from_config();
         while(true){
+            auto user_input = display_playlist_menu_from_config();
             if(user_input == ""){
                 break;
             }
             play_name.push_back(user_input);
         }
-        for(auto track_title : track_titles){
+        for(const auto& track_title : track_titles){
             std::cout<<"\n–- Processing: "<<track_title<<" –-"<<std::endl;
             stats.tracks_processed++;
             int result = load_track_to_controller(track_title);
@@ -204,7 +205,7 @@ void DJSession::simulate_dj_performance() {
                     break;   
             }
             if(!load_track_to_mixer_deck(track_title)){
-                std::cout<<"[ERROR] loading failed"<<std::endl;
+                std::cout<<"[ERROR] Track: "<<track_title<<" load failed"<<std::endl;
                 continue;
             }
         }
