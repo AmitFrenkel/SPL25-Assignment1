@@ -74,7 +74,7 @@ $(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp
 test-leaks: debug
 	@echo "Running memory leak test with valgrind..."
 	@echo "Note: Install valgrind first: sudo apt-get install valgrind"
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(TARGET)
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(TARGET) -I -A
 
 # test run
 test: $(TARGET)

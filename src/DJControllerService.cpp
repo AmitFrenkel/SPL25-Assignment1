@@ -16,13 +16,13 @@ int DJControllerService::loadTrackToCache(AudioTrack& track) {
         cache.get(track_id);
         return 1;
     } 
-    auto clone=track.clone().get();
+    PointerWrapper<AudioTrack> clone=track.clone();
     if(!clone){
         throw std::invalid_argument("This is a NullPointer");
     }
     clone->load();
     clone->analyze_beatgrid();
-    bool putted=cache.put((clone->clone()));
+    bool putted=cache.put(std::move(clone));
     int result=0;
     if (putted)
       result=-1;

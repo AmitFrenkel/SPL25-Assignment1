@@ -64,7 +64,7 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
     // Your implementation here
     std::cout<< "\n=== Loading Track to Deck ==="<<std::endl;    
     auto clone = track.clone();
-    if(clone){
+    if(!clone){
         std::cout<< "[ERROR] Track: "<<track.get_title()<<" failed to clone"<<std::endl;
         return -1;
     }

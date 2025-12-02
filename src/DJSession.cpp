@@ -151,6 +151,7 @@ void DJSession::simulate_dj_performance() {
         play_name.push_back(pair.first);
         }
         std::sort(play_name.begin(), play_name.end());
+        std::reverse(play_name.begin(), play_name.end());
         for(const auto& play : play_name){
         if(!load_playlist(play)){
             std::cout<<"[ERROR] load failed"<<std::endl;
@@ -182,34 +183,40 @@ void DJSession::simulate_dj_performance() {
     }
     else{
         while(true){
-            auto user_input = display_playlist_menu_from_config();
+            std::string user_input = display_playlist_menu_from_config();
             if(user_input == ""){
                 break;
             }
             play_name.push_back(user_input);
-        }
-        for(const auto& track_title : track_titles){
-            std::cout<<"\n–- Processing: "<<track_title<<" –-"<<std::endl;
-            stats.tracks_processed++;
-            int result = load_track_to_controller(track_title);
-            switch(result){
-                case 1:
-                    stats.cache_hits++;
-                    break;
-                case 0:
-                    stats.cache_misses++;
-                    break;
-                case -1:
-                    stats.cache_misses++;
-                    stats.cache_evictions++;
-                    break;   
-            }
-            if(!load_track_to_mixer_deck(track_title)){
-                std::cout<<"[ERROR] Track: "<<track_title<<" load failed"<<std::endl;
+            std::cout<<user_input<<std::endl;
+            if(!load_playlist(user_input)){
+                std::cout<<"[ERROR] load failed"<<std::endl;
                 continue;
             }
+        
+            for(const auto& track_title : track_titles){
+                std::cout<<"\n–- Processing: "<<track_title<<" –-"<<std::endl;
+                stats.tracks_processed++;
+                int result = load_track_to_controller(track_title);
+                switch(result){
+                    case 1:
+                        stats.cache_hits++;
+                        break;
+                    case 0:
+                        stats.cache_misses++;
+                        break;
+                    case -1:
+                        stats.cache_misses++;
+                        stats.cache_evictions++;
+                        break;   
+                }
+                if(!load_track_to_mixer_deck(track_title)){
+                    std::cout<<"[ERROR] Track: "<<track_title<<" load failed"<<std::endl;
+                    continue;
+                }       
+            } 
+            print_session_summary();
         }
-        print_session_summary();
     }
     
 

@@ -23,11 +23,10 @@ Playlist::~Playlist() {
 }
 
 Playlist::Playlist(const Playlist& other): head(nullptr), playlist_name(other.playlist_name), track_count(other.track_count){
-    head = new PlaylistNode(other.head->track);
     PlaylistNode* current = head;
     PlaylistNode* other_current = other.head;
-    while(other_current->next){
-        current->next = new PlaylistNode(*other_current);
+    while(other_current){
+        current = new PlaylistNode(*other_current);
         current = current->next;
         other_current = other_current->next;
     }
@@ -40,18 +39,43 @@ Playlist& Playlist::operator=(const Playlist& other){
     PlaylistNode* current = head;
     while(current){
         PlaylistNode* next = current->next;
+        delete current->track;
         delete current;
         current = next;
     }
     current = head;
     PlaylistNode* other_current = other.head;
-    while(other_current->next){
-        current->next = new PlaylistNode(*other_current);
+    while(other_current){
+        current = new PlaylistNode(*other_current);
         current = current->next;
         other_current = other_current->next;
     }
     playlist_name = other.playlist_name;
     track_count = other.track_count;
+    return *this;
+}
+
+Playlist::Playlist(Playlist&& other): head(other.head), playlist_name(other.playlist_name), track_count(other.track_count){
+    other.head = nullptr;
+    other.track_count = 0;
+}
+
+
+Playlist& Playlist::operator=(Playlist&& other){
+    if(this == &other){
+        return *this;
+    }
+    PlaylistNode* current = head;
+    while(current){
+        PlaylistNode* next = current->next;
+        delete current->track;
+        delete current;
+        current = next;
+    }
+    head = other.head;
+    playlist_name = other.playlist_name;
+    track_count = other.track_count;
+    other.head=nullptr;
     return *this;
 }
 

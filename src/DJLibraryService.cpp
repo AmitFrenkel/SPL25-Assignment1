@@ -20,17 +20,24 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
             MP3Track* mp3_track = new MP3Track(track.title, track.artists, track.duration_seconds, track.bpm,
             track.extra_param1, track.extra_param2);
             library.push_back(mp3_track);
-            std::cout<<"MP3: MP3Track created: "<<mp3_track->get_bitrate()<<" kbps"<<std::endl;
         }
         else{
             WAVTrack* wav_track = new WAVTrack(track.title, track.artists, track.duration_seconds, track.bpm,
             track.extra_param1, track.extra_param2);
             library.push_back(wav_track);
-            std::cout<<"WAV: WAVTrack created: "<<wav_track->get_sample_rate()<<"Hz/"<<wav_track->get_bit_depth()<<"bit"<<std::endl;
         }
     }
     std::cout<<"[INFO] Track library built: "<<library.size()<<" tracks loaded"<<std::endl;
 }
+
+
+DJLibraryService::~DJLibraryService(){
+    for (auto track : library) {
+        delete track;
+    }
+    library.clear();
+}
+
 
 /**
  * @brief Display the current state of the DJ library playlist
@@ -81,24 +88,20 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
     std::cout<<"[INFO] Loading playlist: "<<playlist_name<<""<<std::endl;
     playlist = Playlist(playlist_name);
     for(size_t i=0; i<track_indices.size(); i++){
-        if(track_indices[i]>=(int)library.size()-1 || track_indices[i]<0){
-            std::cout<<"[WARNING] Invalid track index: "<<i<<""<<std::endl;
+        if(track_indices[i]>(int)library.size() || track_indices[i]<1){
+            std::cout<<"[WARNING] Invalid track index: "<<track_indices[i]<<""<<std::endl;
             continue;
         }
-        auto clone = library[track_indices[i]]->clone().release();
+        PointerWrapper<AudioTrack> clone = library[track_indices[i]-1]->clone();
         if(!clone){
-            std::cout<<"[ERROR] track is null"<<i<<""<<std::endl;
+            std::cout<<"[ERROR] Failed to clone track at index "<<track_indices[i]<<""<<std::endl;
             continue;
         }
         clone->load();
         clone->analyze_beatgrid();
-        playlist.add_track(clone);
-        std::cout<<"Added "<<clone->get_title()<<" to playlist "<<playlist_name<<""<<std::endl;        
-        std::cout<<"[INFO] Playlist loaded: "<<playlist.get_name()<<" ("<<playlist.get_track_count()<<" tracks)"<<std::endl;        
-    }
-    // For now, add a placeholder to fix the linker error
-    (void)playlist_name;  // Suppress unused parameter warning
-    (void)track_indices;  // Suppress unused parameter warning
+        playlist.add_track(clone.release());
+    }    
+    std::cout<<"[INFO] Playlist loaded: "<<playlist.get_name()<<" ("<<playlist.get_track_count()<<" tracks)"<<std::endl;
 }
 /**
  * TODO: Implement getTrackTitles method

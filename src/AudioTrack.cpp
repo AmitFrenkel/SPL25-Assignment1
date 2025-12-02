@@ -65,43 +65,38 @@ AudioTrack& AudioTrack::operator=(const AudioTrack& other) {
     if(this == &other){
         return *this;
     }
+    delete[] waveform_data;
     title = other.title;
     artists = other.artists;
     duration_seconds = other.duration_seconds;
     bpm = other.bpm;
     waveform_size = other.waveform_size;
-    for (size_t i = 0; i < waveform_size; ++i) {
-        waveform_data[i] = other.waveform_data[i];
+    if (other.waveform_size > 0 && other.waveform_data) {
+        waveform_data = new double[waveform_size];
+        for (size_t i = 0; i < waveform_size; ++i) {
+            waveform_data[i] = other.waveform_data[i];
+        }
+    } else {
+        waveform_data = nullptr;
     }
     return *this;
 }
 
 AudioTrack::AudioTrack(AudioTrack&& other) noexcept 
-: title(other.title), artists(other.artists), duration_seconds(other.duration_seconds),
-bpm(other.bpm), waveform_data(nullptr), waveform_size(other.waveform_size){
+    : title(std::move(other.title)), artists(std::move(other.artists)), 
+      duration_seconds(other.duration_seconds), bpm(other.bpm), 
+      waveform_data(other.waveform_data), waveform_size(other.waveform_size) {
     // TODO: Implement the move constructor
     #ifdef DEBUG
     std::cout << "AudioTrack move constructor called for: " << other.title << std::endl;
     #endif
     // Your code here...
-    title = other.title;
-    artists = other.artists;
-    duration_seconds = other.duration_seconds;
-    bpm = other.bpm;
-    waveform_size = other.waveform_size;
-    if(other.waveform_size> 0 && other.waveform_data){
-        waveform_data = new double[waveform_size];
-        for (size_t i = 0; i < waveform_size; ++i) {
-            waveform_data[i] = other.waveform_data[i];
-        }
-    }
+    
     //empy other
-    other.title = "";
-    other.artists.clear();
-    other.duration_seconds=0;
-    other.bpm=0;
-    waveform_data = nullptr;
-    waveform_size = 0;
+    other.waveform_data = nullptr; 
+    other.waveform_size = 0;
+    other.duration_seconds = 0;
+    other.bpm = 0;
 
 }
 
@@ -113,19 +108,18 @@ AudioTrack& AudioTrack::operator=(AudioTrack&& other) noexcept {
     #endif
     // Your code here...
     if(this != &other){
-        title = other.title;
-        artists = other.artists;
+        delete[] waveform_data;
+        title = std::move(other.title);
+        artists = std::move(other.artists);
         duration_seconds = other.duration_seconds;
         bpm = other.bpm;
         waveform_data = other.waveform_data;
         waveform_size = other.waveform_size;
         //empy other
-        other.title = "";
-        other.artists.clear();
-        other.duration_seconds=0;
-        other.bpm=0;
-        waveform_data = nullptr;
-        waveform_size = 0;
+        other.waveform_data = nullptr; 
+        other.waveform_size = 0;
+        other.duration_seconds = 0;
+        other.bpm = 0;
     }
     return *this;
 }
