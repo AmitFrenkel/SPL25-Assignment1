@@ -82,13 +82,13 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
             sync_bpm(clone->clone());
         }
     }
-    decks[target_deck] = clone.release();
-    std::cout<< "[Load Complete] "<<track.get_title()<<"is now loaded on deck "<<target_deck<<""<<std::endl;
-    if(decks[active_deck]){
+    if(decks[target_deck]){
         std::cout<< "[Unload] Unloading previous deck "<<active_deck<<"("<<track.get_title()<<")"<<std::endl;
-        delete decks[active_deck];
-        decks[active_deck] = nullptr;
+        delete decks[target_deck];
+        decks[target_deck] = nullptr;
     }
+    decks[target_deck] = clone.release();
+    std::cout<< "[Load Complete] '"<<track.get_title()<<"' is now loaded on deck "<<target_deck<<""<<std::endl;
     active_deck = target_deck;
     std::cout<< "[Active Deck] Switched to deck "<<target_deck<<""<<std::endl;
     return target_deck;

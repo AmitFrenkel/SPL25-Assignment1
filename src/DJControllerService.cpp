@@ -51,6 +51,7 @@ AudioTrack* DJControllerService::getTrackFromCache(const std::string& track_titl
     if(ptr){
         return ptr;
     }
-    // error log - dor/yagel
+    std::cout<<"[ERROR] Track: \""<<track_title<<"\" failed to "
+    "clone and returning appropriate failure code without corrupting cache state"<<std::endl;
     return nullptr;
 }

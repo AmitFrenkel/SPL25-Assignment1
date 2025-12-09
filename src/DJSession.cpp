@@ -150,13 +150,13 @@ void DJSession::simulate_dj_performance() {
         for (const auto& pair : session_config.playlists) {
         play_name.push_back(pair.first);
         }
-        std::sort(play_name.begin(), play_name.end());
-        std::reverse(play_name.begin(), play_name.end());
         for(const auto& play : play_name){
-        if(!load_playlist(play)){
-            std::cout<<"[ERROR] load failed"<<std::endl;
-            continue;
+            if(!load_playlist(play)){
+                std::cout<<"[ERROR] load failed"<<std::endl;
+                continue;
         }
+        std::sort(play_name.begin(), play_name.end());
+        std::reverse(track_titles.begin(), track_titles.end());
         for(const auto& track_title : track_titles){
             std::cout<<"\n–- Processing: "<<track_title<<" –-"<<std::endl;
             stats.tracks_processed++;
@@ -173,10 +173,12 @@ void DJSession::simulate_dj_performance() {
                     stats.cache_evictions++;
                     break;   
             }
+            controller_service.displayCacheStatus(); 
             if(!load_track_to_mixer_deck(track_title)){
                 std::cout<<"[ERROR] Track: "<<track_title<<" load failed"<<std::endl;
                 continue;
             }
+            mixing_service.displayDeckStatus();
         }
         print_session_summary();
     }
@@ -187,14 +189,13 @@ void DJSession::simulate_dj_performance() {
             if(user_input == ""){
                 break;
             }
-            play_name.push_back(user_input);
             std::cout<<user_input<<std::endl;
             if(!load_playlist(user_input)){
                 std::cout<<"[ERROR] load failed"<<std::endl;
                 continue;
             }
-        
-            for(const auto& track_title : track_titles){
+            std::reverse(track_titles.begin(), track_titles.end());
+            for(std::string track_title : track_titles){
                 std::cout<<"\n–- Processing: "<<track_title<<" –-"<<std::endl;
                 stats.tracks_processed++;
                 int result = load_track_to_controller(track_title);
@@ -210,16 +211,16 @@ void DJSession::simulate_dj_performance() {
                         stats.cache_evictions++;
                         break;   
                 }
+                controller_service.displayCacheStatus();
                 if(!load_track_to_mixer_deck(track_title)){
                     std::cout<<"[ERROR] Track: "<<track_title<<" load failed"<<std::endl;
                     continue;
                 }       
+            mixing_service.displayDeckStatus();
             } 
             print_session_summary();
         }
     }
-    
-
 }
 
 
